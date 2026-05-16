@@ -1,6 +1,6 @@
-# 📚 StudyBounty
+# 🧠 UniSolve
 
-### *Decentralized Study互助平台 on Monad Blockchain*
+### *Zero-Knowledge Anonymous Q&A Marketplace on Monad Blockchain*
 
 [![Monad](https://img.shields.io/badge/Built%20on-Monad-00FF88)](https://monad.xyz)
 [![Hackathon](https://img.shields.io/badge/Monad%20Blitz-KL%202026-blue)](https://lu.ma/monad-blitz-kl)
@@ -10,88 +10,124 @@
 
 ## 🎯 The Problem
 
-**Students waste hours stuck on problems. No one answers in group chats. No incentive to help.**
+**Every student has been stuck on a bug with no one to help.**
 
-- ❌ Ask in WhatsApp group → no one replies
-- ❌ Ask friends → they might not know
-- ❌ Traditional Q&A platforms → no guarantee of quality
+- You post in WhatsApp groups → **nobody replies**
+- You ask on Discord → **ignored or trolled**
+- You're too embarrassed to ask → **"it's a stupid question"**
 
-**Worst of all: Answerers fear not getting paid. Askers fear paying for bad answers.**
+**Result:** Hours wasted. Assignment late. Confidence crushed.
+
+**Worse:** Even when someone helps, how do you pay them? Bank transfer? E-wallet? Too much friction for a small reward.
 
 ---
 
-## 💡 The Solution: StudyBounty
+## 💡 The Solution: UniSolve
 
-A decentralized study互助平台 with **preview-first, pay-to-unlock** mechanism.
+**Anonymous, escrow-protected, pay-per-unlock Q&A marketplace on Monad blockchain.**
 
-### How It Works
-┌─────────────────────────────────────────────────────────────┐
-│ StudyBounty Flow │
-├─────────────────────────────────────────────────────────────┤
-│ │
-│ 1. Asker posts question + deposits bounty to smart contract│
-│ ↓ │
-│ 2. Answerers submit PREVIEW (first 100 chars) │
-│ ↓ │
-│ 3. Asker reads previews → chooses best one │
-│ ↓ │
-│ 4. Asker clicks UNLOCK → auto-pay to answerer │
-│ ↓ │
-│ 5. Full answer revealed. Remaining bounty refunded. │
-│ │
-└─────────────────────────────────────────────────────────────┘
+| Feature | How It Works |
+|---------|---------------|
+| 🔒 **Anonymous Posting** | Ask without revealing your identity. No shame, no judgment. |
+| 💰 **Set Your Own Bounty** | Askers decide the reward (0.5 to 100 MON). Solvers set their price. |
+| ⚡ **Instant Payout** | Purchase an answer → solver gets paid in 1 second. |
+| 🔐 **Preview + Unlock** | See 20% preview free. Pay to unlock the full answer. |
+| 🏆 **Pick the Best** | Compare multiple previews, buy only the best answer. |
+| ⏰ **Auto-Refund** | No good answer? Get your full bounty back. |
 
+---
 
+## 🔐 The Secret Sauce: Preview + Pay-Per-Unlock
 
-### Why This Works
+**The #1 fear in bounty systems:** *"What if multiple people answer and the asker only wants to pay one?"*
 
-| Problem | StudyBounty Solution |
+**What if the asker doesn't want to pay at all?**
+
+**UniSolve solves this with encrypted answers + free previews:**
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    UniSolve Answer Flow                          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  👩‍💻 Solver writes answer                                        │
+│         │                                                        │
+│         ▼                                                        │
+│  ✂️ Split answer into two parts:                                 │
+│     - 20% PREVIEW (free, proves you know the answer)            │
+│     - 80% FULL (encrypted, pay to unlock)                       │
+│         │                                                        │
+│         ▼                                                        │
+│  📤 Upload to Monad blockchain                                   │
+│         │                                                        │
+│         ▼                                                        │
+│  👨‍🎓 Asker sees ALL previews from ALL solvers:                   │
+│     "Solver A: 'Your bug is caused by variable type...'"         │
+│     "Solver B: 'The loop condition should be i<10...'"           │
+│         │                                                        │
+│         ├──────────────────────────────────────────────┐         │
+│         │                                              │         │
+│         ▼                                              ▼         │
+│  💰 Pick the best preview                           🙅 Skip     │
+│     Pay to unlock full answer                         │         │
+│         │                                              │         │
+│         ▼                                              ▼         │
+│  🔓 Get complete solution                          Get refund   │
+│         │                                         (if no buy)    │
+│         ▼                                              │         │
+│  ✅ Solver gets paid                                  │         │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+
+**Why this works:**
+
+| Role | What They Get | Risk |
+|------|---------------|------|
+| **Asker** | Compare multiple answers, pay only for the best | Zero - refund if no good answer |
+| **Solver** | Paid when answer is purchased | Low - only wrote 20% preview if not chosen |
+| **Cheater** | Try to steal answers | Impossible - full answer is encrypted |
+
+---
+
+## 💰 How Pricing Works
+
+| Who | What They Set | Example |
+|-----|---------------|---------|
+| **Asker** | Bounty (total reward pool) | "I'll pay 5 MON for this SQL question" |
+| **Solver** | Price (must be ≤ bounty) | "I'll solve it for 3 MON" |
+| **Market** | Askers compare previews, buy the best value | Cheaper or better preview wins |
+
+**Typical bounties by difficulty:**
+
+| Difficulty | Typical Bounty (MON) |
+|------------|----------------------|
+| Simple Bug (syntax, typo) | 0.5 - 1 MON |
+| Medium Problem (logic, SQL) | 2 - 5 MON |
+| Complex Issue (algorithm) | 5 - 10 MON |
+| Full Project Help | 10 - 50 MON |
+
+---
+
+## ⚡ Why Monad?
+
+| Feature | Why UniSolve Needs It |
 |---------|----------------------|
-| Answerers fear no payment | ✅ Bounty locked in smart contract escrow |
-| Askers fear bad answers | ✅ Preview first, pay only if satisfied |
-| No incentive to help | ✅ Earn MON tokens + reputation points |
-| No quality guarantee | ✅ Reputation system rewards good answerers |
+| **10,000+ TPS** | Handle thousands of students asking questions simultaneously |
+| **1-second finality** | "I paid. Where's my answer?" → 1 second. No waiting. |
+| **Near-zero gas** | A 1 MON bounty on Ethereum costs 2 MON in gas. On Monad? <0.01 MON. **Micro-bounties become viable.** |
+| **EVM-compatible** | Deploy existing Solidity code. No new language to learn. |
+
+> **Traditional blockchains make micro-transactions impossible. Monad makes them profitable.**
 
 ---
 
-## 🔧 Why Monad?
+## 🏗️ Technical Architecture
 
-| Feature | Why It Matters for StudyBounty |
-|---------|-------------------------------|
-| **10,000+ TPS** | Handle hundreds of students unlocking answers simultaneously during exam season |
-| **< $0.01 Gas** | Micro-payments (0.1 MON unlocks) become feasible. Ethereum would cost $5+ per tx |
-| **1 sec finality** | Instant unlock experience - no waiting 15 minutes |
-| **EVM compatible** | Use Solidity + MetaMask. No new language to learn |
-
-> **Traditional blockchains like Ethereum are too slow and expensive for micro-payments. Monad makes StudyBounty possible.**
-
----
-
-## 📦 Smart Contract
-
-### Core Functions
+### Smart Contract (`UniSolve.sol`)
 
 ```solidity
-// Ask a question with bounty
-function askQuestion(
-    string memory _title,
-    string memory _content,
-    uint256 _deadlineHours
-) external payable returns (uint256);
-
-// Submit answer with preview
-function submitAnswer(
-    uint256 _questionId,
-    string memory _preview,
-    string memory _fullContentHash,
-    uint256 _price
-) external;
-
-// Unlock full answer (auto-pay)
-function unlockAnswer(
-    uint256 _questionId,
-    uint256 _answerIndex
-) external;
-
-// Close question and refund remaining bounty
-function closeQuestion(uint256 _questionId) external;
+// Core functions
+function createQuestion(string title, string preview, uint bounty, uint duration) external payable
+function submitAnswer(uint questionId, string preview, string encryptedFull, string proof, uint price) external
+function purchaseAnswer(uint questionId, uint answerId) external payable
+function selectWinner(uint questionId, uint answerId) external
+function refundTimeout(uint questionId) external
