@@ -1,184 +1,1059 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UniSolve - Monad Tech Bounty</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UniSolve — Anonymous Q&A on Monad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg:        #0a0b0d;
+    --bg2:       #0f1115;
+    --bg3:       #161820;
+    --border:    rgba(255,255,255,0.07);
+    --border2:   rgba(255,255,255,0.12);
+    --green:     #00ff88;
+    --green-dim: rgba(0,255,136,0.12);
+    --green-mid: rgba(0,255,136,0.25);
+    --amber:     #f5a623;
+    --red:       #ff4d4d;
+    --blue:      #5b8dee;
+    --text:      #e2e8f0;
+    --text2:     #94a3b8;
+    --text3:     #475569;
+    --mono:      'IBM Plex Mono', monospace;
+    --sans:      'Space Grotesk', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    padding-bottom: 5rem;
+    overflow-x: hidden;
+  }
+
+  /* TOP BAR */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 2rem;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+  }
+  .brand span { color: var(--green); font-family: var(--mono); font-size: 0.9rem; }
+  
+  .connect-btn {
+    background: transparent;
+    border: 1px solid var(--green-mid);
+    color: var(--green);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .connect-btn:hover {
+    background: var(--green-dim);
+    border-color: var(--green);
+    box-shadow: 0 0 12px var(--green-dim);
+  }
+  .connect-btn.connected {
+    border-color: var(--border2);
+    color: var(--text2);
+  }
+
+  /* NAVIGATION TABS */
+  .nav-tabs {
+    display: flex;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+  }
+  .tab {
+    padding: 1rem 1.5rem;
+    color: var(--text2);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active {
+    color: var(--green);
+    border-bottom-color: var(--green);
+    font-weight: 600;
+  }
+
+  /* HERO BANNER */
+  .hero {
+    padding: 2.5rem 2rem;
+    background: radial-gradient(circle at 80% 20%, rgba(0,255,136,0.03) 0%, transparent 50%);
+    border-bottom: 1px solid var(--border);
+  }
+  .hero h1 { font-size: 2.2rem; font-weight: 500; margin-bottom: 0.5rem; letter-spacing: -1px; }
+  .hero h1 b { color: var(--green); font-weight: 600; }
+  .hero p { color: var(--text2); font-size: 0.95rem; max-width: 600px; line-height: 1.5; }
+
+  /* OVERALL LAYOUT */
+  .main-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* QUESTIONS LIST */
+  .filter-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--text2);
+  }
+  .filter-bar select {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-family: var(--sans);
+    outline: none;
+  }
+
+  .q-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .q-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--border2);
+    background: var(--bg3);
+  }
+  .q-title { font-size: 1.15rem; font-weight: 500; margin-bottom: 0.5rem; color: #fff; }
+  .q-preview { color: var(--text2); font-size: 0.88rem; line-height: 1.5; margin-bottom: 1rem; font-family: var(--sans); }
+  .q-meta { display: flex; gap: 1rem; font-family: var(--mono); font-size: 0.75rem; }
+  .q-meta-item { color: var(--text3); }
+  .q-meta-item.green { color: var(--green); }
+  .q-meta-item.amber { color: var(--amber); }
+
+  .q-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 0.75rem; }
+  .bounty { font-family: var(--mono); font-size: 1.25rem; font-weight: 600; color: var(--green); line-height: 1; }
+  .bounty small { display: block; font-size: 0.65rem; color: var(--text3); text-transform: uppercase; text-align: right; margin-top: 0.2rem; }
+  
+  .status-badge {
+    font-size: 0.65rem;
+    font-family: var(--mono);
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .badge-open { background: rgba(0,255,136,0.08); color: var(--green); border: 1px solid rgba(0,255,136,0.2); }
+  .badge-closed { background: var(--bg3); color: var(--text3); border: 1px solid var(--border); }
+  .badge-refunded { background: rgba(255,77,77,0.08); color: var(--red); border: 1px solid rgba(255,77,77,0.2); }
+
+  .q-card.solved { border-left: 3px solid var(--text3); }
+  .q-card.solved .q-title { color: var(--text2); }
+
+  /* SIDEBAR METRICS */
+  .sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+  .widget { background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 1.25rem; }
+  .widget-title { font-family: var(--mono); font-size: 0.75rem; color: var(--text3); text-transform: uppercase; margin-bottom: 1rem; letter-spacing: 0.5px; }
+  
+  .stat-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.75rem; }
+  .stat-row:last-child { margin-bottom: 0; }
+  .stat-label { font-size: 0.85rem; color: var(--text2); }
+  .stat-val { font-family: var(--mono); font-weight: 600; font-size: 1rem; }
+  .stat-val.green { color: var(--green); }
+
+  /* FORMS & INPUTS */
+  .form-group { margin-bottom: 1.25rem; }
+  .form-group label { display: block; font-family: var(--mono); font-size: 0.75rem; color: var(--text2); margin-bottom: 0.5rem; text-transform: uppercase; }
+  .form-group input, .form-group textarea, .form-group select {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    padding: 0.75rem;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-group input:focus, .form-group textarea:focus { border-color: var(--green-mid); }
+  .form-group textarea { height: 120px; resize: vertical; }
+  .form-group input[type="number"] { font-family: var(--mono); }
+  
+  .primary-btn {
+    background: var(--green);
+    color: #000;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.15s, box-shadow 0.15s;
+  }
+  .primary-btn:hover { opacity: 0.9; box-shadow: 0 0 16px rgba(0,255,136,0.25); }
+
+  .secondary-btn {
+    background: transparent;
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    padding: 0.5rem 1rem;
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .secondary-btn:hover { border-color: var(--text3); color: var(--text); }
+
+  /* DETAIL MODAL OVERLAY */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(5,6,8,0.85);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s;
+    display: flex; justify-content: center; align-items: center;
+    padding: 2rem;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: auto; }
+  
+  .modal-container {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    width: 100%;
+    max-width: 800px;
+    max-height: 85vh;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  }
+  .modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .modal-close {
+    background: transparent; border: none; color: var(--text3); font-size: 1.5rem; cursor: pointer; line-height: 1;
+  }
+  .modal-close:hover { color: var(--text); }
+  
+  .modal-body { padding: 1.5rem; overflow-y: auto; flex-grow: 1; }
+  
+  .modal-q-preview {
+    font-size: 0.95rem; color: var(--text); line-height: 1.6; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); white-space: pre-wrap;
+  }
+  
+  /* ANSWERS INSIDE MODAL */
+  .a-section-title { font-family: var(--mono); font-size: 0.75rem; color: var(--text3); text-transform: uppercase; margin-bottom: 1rem; }
+  .a-card {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 1.25rem; margin-bottom: 1rem;
+  }
+  .a-card.winner { border-color: var(--green-mid); background: linear-gradient(to right, rgba(0,255,136,0.01), transparent); }
+  .a-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-family: var(--mono); color: var(--text2); margin-bottom: 0.5rem; }
+  .a-solver { color: var(--blue); }
+  .a-price { color: var(--green); }
+  .a-preview { font-size: 0.9rem; line-height: 1.5; color: var(--text); }
+  
+  .blurred {
+    filter: blur(4.5px);
+    opacity: 0.4;
+    user-select: none;
+    pointer-events: none;
+  }
+  .locked-notice {
+    font-family: var(--mono); font-size: 0.72rem; color: var(--amber); margin-top: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  .a-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; justify-content: flex-end; align-items: center; }
+  .btn-unlock {
+    background: rgba(0,255,136,0.08); border: 1px solid var(--green-mid); color: var(--green); font-family: var(--mono); font-size: 0.72rem; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer;
+  }
+  .btn-unlock:hover { background: var(--green-dim); border-color: var(--green); }
+  .btn-best {
+    background: rgba(91,141,238,0.08); border: 1px solid rgba(91,141,238,0.25); color: var(--blue); font-family: var(--mono); font-size: 0.72rem; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer;
+  }
+  .btn-best:hover { background: rgba(91,141,238,0.15); border-color: var(--blue); }
+
+  .proof-badge {
+    font-family: var(--mono); font-size: 0.65rem; padding: 0.15rem 0.4rem; border-radius: 3px; border: 1px solid rgba(245,166,35,0.2); color: var(--amber); background: rgba(245,166,35,0.05); cursor: help;
+  }
+
+  /* GATE / LOCK SLIDE PANEL (CONNECTED WALLET OBLIGATION) */
+  .gate-panel {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 2rem; text-align: center; max-width: 500px; margin: 4rem auto;
+  }
+  .gate-icon { font-size: 2.5rem; margin-bottom: 1rem; color: var(--amber); line-height: 1; }
+  .gate-title { font-size: 1.25rem; font-weight: 500; margin-bottom: 0.5rem; }
+  .gate-desc { color: var(--text2); font-size: 0.88rem; line-height: 1.6; margin-bottom: 1.5rem; }
+  .gate-btn {
+    background: #fff; color: #000; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; font-weight: 600; font-size: 0.9rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: opacity 0.15s;
+  }
+  .gate-btn:hover { opacity: 0.9; }
+
+  /* WALLET CONSOLE SCREEN */
+  .console {
+    background: #050608; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; font-family: var(--mono); font-size: 0.8rem; line-height: 1.6; color: #8492a6; margin-top: 1.5rem;
+  }
+  .console-title { color: var(--text3); text-transform: uppercase; font-size: 0.7rem; margin-bottom: 0.5rem; letter-spacing: 0.5px; }
+  .console-row { display: flex; margin-bottom: 0.25rem; }
+  .console-label { width: 110px; color: var(--text2); shrink: 0; }
+  .console-val { color: var(--text); word-break: break-all; }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 2rem; right: 2rem; background: var(--bg3); border: 1px solid var(--green-mid); color: var(--green); font-family: var(--mono); font-size: 0.8rem; padding: 0.75rem 1.25rem; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: translateY(100px); opacity: 0; pointer-events: none; transition: transform 0.2s, opacity 0.2s; z-index: 1000;
+  }
+  #toast.show { transform: translateY(0); opacity: 1; }
+  #toast.error { border-color: rgba(255,77,77,0.3); color: var(--red); }
+
+  .empty { text-align: center; padding: 4rem 2rem; color: var(--text3); font-family: var(--mono); font-size: 0.85rem; }
+  .empty-icon { font-size: 1.5rem; margin-bottom: 0.5rem; opacity: 0.3; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 </head>
-<body class="bg-[#FBF9F4] text-[#2D2A26] font-sans min-h-screen">
+<body>
 
-  <nav class="border-b border-[#EAE6DB] bg-white/80 backdrop-blur px-8 py-4 flex justify-between items-center">
-    <div class="text-xl font-bold tracking-tight text-[#2D2A26]">✨ UniSolve</div>
-    <div id="wallet-badge" class="bg-[#F3EFF5] text-sm font-mono px-4 py-2 rounded-full border border-[#E1DBCE] text-[#6B665F]">
-      ⚪ Wallet Not Connected
-    </div>
-  </nav>
+<div class="header">
+  <div class="brand">UniSolve <span>[testnet-evm]</span></div>
+  <button class="connect-btn" id="connectBtn" onclick="openConnectModal('Nav click')">Connect Wallet</button>
+</div>
 
-  <main class="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="nav-tabs">
+  <div class="tab active" onclick="switchTab('browse')">Browse Questions</div>
+  <div class="tab" onclick="switchTab('ask')">Ask & Bounty</div>
+  <div class="tab" onclick="switchTab('solve')">Solve to Earn</div>
+  <div class="tab" onclick="switchTab('wallet')">Dashboard & Node</div>
+</div>
+
+<div class="hero">
+  <h1>Pay for <b>Verified Knowledge</b>, Not Guesswork</h1>
+  <p>An on-chain escrow market built on Monad. Askers lock bounties. Solvers reveal partial previews with ZK proofs. Pay exclusively to decrypt the missing link.</p>
+</div>
+
+<div class="main-layout">
+  
+  <div class="left-content">
     
-    <div class="bg-white p-8 rounded-2xl border border-[#EAE6DB] shadow-sm flex flex-col justify-between">
-      <div>
-        <div class="flex justify-between items-start mb-6">
-          <h2 class="text-lg font-bold tracking-tight text-[#2D2A26]">✨ Secure Sandbox Execution Result</h2>
-          <span class="bg-[#F2EDFF] text-[#6366F1] text-xs font-semibold px-3 py-1 rounded-md border border-[#E0D5FF]">
-            Verified Output
-          </span>
-        </div>
-        <p class="text-sm text-[#6B665F] mb-6">
-          Target Issue: <span class="font-semibold text-[#2D2A26]">Fix Bash Script Date Validation Logic</span>
-        </p>
-
-        <div class="bg-[#2D2A26] rounded-xl p-6 font-mono text-sm text-[#F7F4EB] shadow-inner">
-          <div class="text-[#8E8A83] mb-2">// Running automatic test case...</div>
-          <div class="mb-4">
-            <span class="text-[#A7F3D0]">$</span> <span class="text-white">./validate_date.sh "2026-02-30"</span>
-          </div>
-          <div class="text-[#34D399] font-bold bg-[#1E293B] p-3 rounded border border-[#059669]/30">
-            [SUCCESS] Output: "Error: February 30, 2026 is an invalid date. Test case PASSED."
-          </div>
+    <div class="panel active" id="panel-browse">
+      <div class="filter-bar">
+        <div>Showing <span id="qCount" style="color:var(--text)">0</span> market listings</div>
+        <div>
+          filter: 
+          <select id="filterStatus" onchange="renderQuestions()">
+            <option value="all">ALL LISTINGS</option>
+            <option value="Open">OPEN BOUNTIES</option>
+            <option value="Closed">SOLVED / CLOSED</option>
+          </select>
         </div>
       </div>
+      <div id="questionList"></div>
+    </div>
 
-      <div class="mt-6 pt-4 border-t border-[#F3EFF5] text-xs text-[#8E8A83] flex items-center gap-2">
-        ℹ️ The hidden code on the right has executed perfectly against your input. No fraud possible.
+    <div class="panel" id="panel-ask">
+      <div style="max-width:700px;">
+        <div class="form-group">
+          <label>Question / Problem Title</label>
+          <input type="text" id="askTitle" placeholder="e.g., Duplicates in nested loop execution inside multi-threaded runtime" />
+        </div>
+        <div class="form-group">
+          <label>Detailed Specifications & Context (Public Preview Text)</label>
+          <textarea id="askPreview" placeholder="Provide the full background, repository context, or logs. Solvers read this public text to compile their solutions..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Your On-Chain Public Key (For Asymmetric Answer Encryption)</label>
+          <input type="text" id="askPubkey" placeholder="e.g., ed25519_pk... or secp256k1 compressed hex string representation" />
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+          <div class="form-group">
+            <label>Escrow Locked Bounty (MON)</label>
+            <input type="number" id="askBounty" placeholder="0.5" step="0.1" min="0.001" />
+          </div>
+          <div class="form-group">
+            <label>Bounty Market Lifespan / Expiry</label>
+            <select id="askDuration">
+              <option value="7200">2 Hours (Urgent Review)</option>
+              <option value="86400" selected>24 Hours (Standard)</option>
+              <option value="259200">3 Days (Deep Debugging)</option>
+            </select>
+          </div>
+        </div>
+        <button class="primary-btn" onclick="postQuestion()" style="margin-top:0.5rem;">Initialize Escrow Contract & Lock Bounty</button>
       </div>
     </div>
 
-    <div class="bg-white p-8 rounded-2xl border border-[#EAE6DB] shadow-sm relative flex flex-col justify-between">
-      <div>
-        <h2 class="text-lg font-bold tracking-tight text-[#2D2A26] mb-6">🔒 Solver's Source Code</h2>
+    <div class="panel" id="panel-solve">
+      <div class="filter-bar" style="margin-bottom:1.5rem;">
+        <div>Available active bounties seeking verified answers</div>
+      </div>
+      <div id="solveList"></div>
+    </div>
+
+    <div class="panel" id="panel-wallet">
+      <div style="max-width:600px;">
+        <h3 style="font-size:1.1rem;font-weight:500;margin-bottom:1rem;">Your Node Settlement Profile</h3>
         
-        <div id="code-blindbox" class="bg-[#F7F4EB] rounded-xl p-6 font-mono text-sm text-[#6B665F] border border-[#EAE6DB] transition-all duration-700 blur-xl select-none">
-          <pre>
-function validate_date() {
-  local d=$1
-  if date -d "$d" >/dev/null 2>&1; then
-    echo "Date $d is valid."
-  else
-    echo "Error: $d is an invalid date."
-    return 1
-  fi
-}
-          </pre>
+        <div class="console">
+          <div class="console-title">EVM Provider Identity</div>
+          <div class="console-row">
+            <div class="console-label">User Address:</div>
+            <div class="console-val" id="walletAddr">0x000...0000</div>
+          </div>
+          <div class="console-row">
+            <div class="console-label">Network Sync:</div>
+            <div class="console-val" style="color:var(--green)">MONAD TESTNET (CHAINID 10143)</div>
+          </div>
         </div>
-      </div>
 
-      <div id="lock-overlay" class="absolute inset-x-8 top-28 bottom-32 bg-white/60 backdrop-blur-sm rounded-xl flex flex-col items-center justify-center text-center p-6 border border-[#EAE6DB]/50">
-        <span class="text-4xl mb-3">🔒</span>
-        <h3 class="font-bold text-[#2D2A26] mb-1">Source Code is Locked</h3>
-        <p class="text-xs text-[#8E8A83] max-w-[280px]">
-          The verification on the left matches your bug. Pay the bounty to instantly reveal the source code.
-        </p>
-      </div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin-top:1.5rem;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:0.75rem;font-family:var(--mono);color:var(--text3);text-transform:uppercase;margin-bottom:0.25rem;">Claimable Earned Revenue</div>
+            <div id="pendingAmt" style="font-family:var(--mono);font-size:1.5rem;font-weight:600;color:#fff;">0.000 MON</div>
+          </div>
+          <button class="primary-btn" onclick="withdrawAll()">Withdraw to Wallet</button>
+        </div>
 
-      <div class="mt-8">
-        <button id="decrypt-btn" onclick="triggerMockPayment()" class="w-full bg-[#2D2A26] hover:bg-[#423E39] text-[#FBF9F4] font-medium py-3 px-4 rounded-xl transition shadow-sm flex justify-center items-center gap-2">
-          💳 Confirm & Decrypt Source Code (Pay 0.001 MONAD)
-        </button>
+        <div class="console" style="margin-top:1.5rem;">
+          <div class="console-title">Node Network Log</div>
+          <div id="walletLog" style="color:var(--text2)">Awaiting connection confirmation event...</div>
+        </div>
       </div>
     </div>
 
-  </main>
+  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <div class="sidebar">
+    <div class="widget">
+      <div class="widget-title">Protocol Integrity Global State</div>
+      <div class="stat-row">
+        <div class="stat-label">Total Markets Formed</div>
+        <div class="stat-val" id="statQuestions">0</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-label">ZK Proofs Verified</div>
+        <div class="stat-val" id="statAnswers">0</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-label">Total Locked TVL</div>
+        <div class="stat-val green" id="statMon">0.0 MON</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-label">Finality Bound</div>
+        <div class="stat-val" style="color:var(--blue);font-family:var(--mono)">~1 sec (400ms slots)</div>
+      </div>
+    </div>
+    
+    <div class="widget" style="background:linear-gradient(to bottom, var(--bg2), rgba(0,255,136,0.01));">
+      <div class="widget-title">How Knowledge Settlement Works</div>
+      <p style="font-size:0.8rem;color:var(--text2);line-height:1.6;margin-bottom:0.75rem;">1. Asker locks MON rewards along with a public key inside our escrow framework.</p>
+      <p style="font-size:0.8rem;color:var(--text2);line-height:1.6;margin-bottom:0.75rem;">2. Solvers encrypt their complete solution using the Asker's public key, rendering it a ciphertext blind to all intermediate routers.</p>
+      <p style="font-size:0.8rem;color:var(--text2);line-height:1.6;">3. Solvers publish a clear text preview alongside a structural ZK Proof to guarantee the ciphertext corresponds to an identical codebase structure.</p>
+    </div>
+  </div>
 
-  <script>
-    const RECEIVER_ADDRESS = "0x7F993Dd7450Fefb0b284A00bE452E84E7F21d502"; 
-    const AMOUNT_TO_PAY = "0.001";
+</div>
 
-    let provider;
-    let signer;
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-container">
+    <div class="modal-header">
+      <div>
+        <h2 id="modalTitle" style="font-size:1.25rem;font-weight:500;color:#fff;margin-bottom:0.25rem;">Question Title</h2>
+        <div id="modalMeta" style="font-family:var(--mono);font-size:0.72rem;color:var(--text2);">Bounty metadata mapping info...</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-q-preview" id="modalPreview">Public instruction snippet context...</div>
+      
+      <div class="a-section-title" id="modalAnswerHeader">// 0 solutions submitted</div>
+      <div id="modalAnswers"></div>
 
-    window.addEventListener('load', async () => {
-      if (typeof window.ethereum !== 'undefined') {
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        const accounts = await provider.listAccounts();
-        if (accounts.length > 0) {
-          updateWalletUI(accounts[0]);
-        }
+      <div id="submitAnswerForm" style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);display:none;">
+        <h3 style="font-size:1rem;font-weight:500;margin-bottom:1rem;color:#fff;">Propose a Cryptographic Solution Representation</h3>
+        <div class="form-group">
+          <label>Public Visible Preview Text (Hint or verification structural outline)</label>
+          <input type="text" id="ansPreview" placeholder="e.g., Fixed via updating thread locks. See shadow mapping variable fixed in line 42." />
+        </div>
+        <div class="form-group">
+          <label>Ciphertext Encrypted Solution (Private data path transmitted securely)</label>
+          <textarea id="ansFull" placeholder="Paste your fully encrypted solution data string here. Only the target question holder can decrypt this payload using their counterpart private token key."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Your Mandatory Unlock Pricing Demand (MON)</label>
+          <input type="number" id="ansPrice" placeholder="1.0" step="0.1" min="0" id="ansPriceMax" />
+        </div>
+        <div style="display:flex;gap:1rem;align-items:center;">
+          <button class="primary-btn" onclick="submitAnswer()">Submit Solution Envelope</button>
+          <span style="font-family:var(--mono);font-size:0.68rem;color:var(--text3)">* Submitting automatically signs a simulated ZK proof bundle on-chain.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="connectModal">
+  <div class="gate-panel">
+    <div class="gate-icon">🔑</div>
+    <div class="gate-title">Wallet Authentication Check</div>
+    <div class="gate-desc" id="connectModalReason">You need a connected wallet to access this section. Connect your decentralized wallet instance to route transactions over the fast Monad test framework ecosystem.</div>
+    <button class="gate-btn" id="modalConnectBtn" onclick="connectWallet()">
+      <span id="modalBtnText">Connect MetaMask</span>
+    </button>
+    <button class="secondary-btn" onclick="closeConnectModal()" style="margin-top:1rem;width:100%;border:none;">Cancel / Close</button>
+    <div id="modalNoMetaMask" style="display:none;font-family:var(--mono);font-size:0.75rem;color:var(--red);margin-top:1rem;text-align:center;">
+      No MetaMask injection found! Please install the wallet extension.
+    </div>
+  </div>
+</div>
+
+<div id="toast">Info notification alert text placeholder</div>
+
+<script>
+// ──────────────────────────────────────────────
+// CONTRACT CONFIG
+// ──────────────────────────────────────────────
+const CONTRACT_ADDRESS = '0x7F993Dd7450Fefb0b284A00bE452E84E7F21d502';
+
+const ABI = [
+  'function createQuestion(string,string,uint256) external payable returns (uint256)',
+  'function submitAnswer(uint256,string,string,string,uint256) external returns (uint256)',
+  'function purchaseAnswer(uint256,uint256) external payable',
+  'function selectBestAnswer(uint256,uint256) external',
+  'function claimRefund(uint256) external',
+  'function withdraw() external',
+  'function registerPublicKey(string) external',
+  'function getQuestion(uint256) external view returns (tuple(uint256,address,string,string,uint256,uint256,uint8,uint256,uint256,uint256,uint256))',
+  'function getAnswer(uint256,uint256) external view returns (tuple(uint256,uint256,address,string,string,string,uint256,uint256,bool,bool,uint256))',
+  'function getAnswerIds(uint256) external view returns (uint256[])',
+  'function getPendingWithdrawal(address) external view returns (uint256)',
+  'function totalQuestions() external view returns (uint256)',
+  'function publicKeys(address) external view returns (string)',
+];
+
+// ──────────────────────────────────────────────
+// MOCK STATE DATA
+// ──────────────────────────────────────────────
+const MOCK_QUESTIONS = [
+  {
+    id: 1, title: 'Why does my Solidity mapping not update after tx?',
+    previewContent: 'I have a mapping(address => uint256) balances. After calling deposit(), the balance stays 0 when I call getBalance(). Using Hardhat local node. Here is my contract snippet...',
+    bounty: '3.5', deadline: Date.now()/1000 + 18000,
+    status: 'Open', winnerAnswerId: 0, answerCount: 2, createdAt: Date.now()/1000 - 3600,
+  },
+  {
+    id: 2, title: 'SQL JOIN returning duplicate rows — what am I missing?',
+    previewContent: 'My LEFT JOIN between users and orders returns 4x rows. I only have 3 users. Postgres 15. I suspect the ON clause...',
+    bounty: '1.5', deadline: Date.now()/1000 + 7200,
+    status: 'Open', winnerAnswerId: 0, answerCount: 1, createdAt: Date.now()/1000 - 1800,
+  },
+  {
+    id: 3, title: 'React useEffect firing twice on mount in dev mode',
+    previewContent: 'My fetch inside useEffect runs twice every time in React 18. Not in production. I know about StrictMode but...',
+    bounty: '0.5', deadline: Date.now()/1000 - 100,
+    status: 'Closed', winnerAnswerId: 1, answerCount: 3, createdAt: Date.now()/1000 - 86400,
+  },
+  {
+    id: 4, title: 'Python asyncio.gather() swallowing exceptions silently',
+    previewContent: 'When one of my coroutines raises an exception inside asyncio.gather(), the others continue and no error is surfaced. I need all tasks to fail fast...',
+    bounty: '2.0', deadline: Date.now()/1000 + 43200,
+    status: 'Open', winnerAnswerId: 0, answerCount: 0, createdAt: Date.now()/1000 - 900,
+  },
+];
+
+const MOCK_ANSWERS = {
+  1: [
+    { id: 1, solver: '0xaB3d...f9e2', previewContent: 'The issue is likely that you\'re reading state before the tx mines. Try awaiting the tx.wait() before calling getBalance(). Also check if your mapping key is correct — msg.sender vs a hardcoded address...', price: '2.0', purchaseCount: 0, isPurchasedByAsker: false, isBestAnswer: false, zkProof: 'zk:sha256:a3f9' },
+    { id: 2, solver: '0xcc91...2a17', previewContent: 'Double check your contract is using the right state variable. Common bug: you defined a local variable with the same name that shadows the storage mapping. Look for `uint256 balances`...', price: '1.5', purchaseCount: 1, isPurchasedByAsker: false, isBestAnswer: false, zkProof: '' },
+  ],
+  2: [
+    { id: 3, solver: '0x5fe2...8bcd', previewContent: 'Duplicate rows in LEFT JOIN usually mean your ON clause is matching multiple rows. If orders has more than one order per user, each user row gets repeated. You might need GROUP BY or a subquery...', price: '1.0', purchaseCount: 0, isPurchasedByAsker: false, isBestAnswer: false, zkProof: 'zk:poseidon:7c21' },
+  ],
+  3: [],
+  4: [],
+};
+
+let mockNextId = 5;
+let walletAddr = null;
+let isConnected = false;
+let activeTab = 'browse';
+let activeQuestionId = null;
+let isSolveMode = false;
+let provider = null;
+let signer = null;
+
+// ──────────────────────────────────────────────
+// WALLET MODAL CONTROLS
+// ──────────────────────────────────────────────
+function openConnectModal(reason = "You need a connected wallet to do this.") {
+  document.getElementById('connectModalReason').textContent = reason;
+  document.getElementById('connectModal').classList.add('open');
+}
+
+function closeConnectModal() {
+  document.getElementById('connectModal').classList.remove('open');
+}
+
+function requireWallet() {
+  if (!isConnected) {
+    showToast('Connect your wallet first', true);
+    openConnectModal("Please connect your wallet to access this section.");
+    return false;
+  }
+  return true;
+}
+
+// ──────────────────────────────────────────────
+// METAMASK CORE CONNECTOR ENGINE
+// ──────────────────────────────────────────────
+async function connectWallet() {
+  // 1. Check if MetaMask provider exists
+  if (typeof window.ethereum === 'undefined') {
+    document.getElementById('modalNoMetaMask').style.display = 'block';
+    document.getElementById('modalBtnText').textContent = 'MetaMask Required';
+    showToast('Please install MetaMask extension', true);
+    return;
+  }
+
+  provider = new ethers.providers.Web3Provider(window.ethereum);
+  signer = provider.getSigner();
+
+  const modalBtn = document.getElementById('modalConnectBtn');
+  const btnText = document.getElementById('modalBtnText');
+  const navBtn = document.getElementById('connectBtn');
+
+  if (modalBtn) modalBtn.disabled = true;
+  if (btnText) btnText.textContent = 'Connecting...';
+
+  try {
+    // 2. Request accounts array via JSON-RPC endpoint injection
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    walletAddr = accounts[0];
+    isConnected = true;
+    
+    const shortAddress = walletAddr.slice(0,6) + '...' + walletAddr.slice(-4);
+
+    // 3. Update navbar state representation
+    if (navBtn) {
+      navBtn.textContent = shortAddress;
+      navBtn.classList.add('connected');
+    }
+    
+    document.getElementById('walletAddr').textContent = walletAddr;
+    document.getElementById('pendingAmt').textContent = '0.000 MON';
+    document.getElementById('walletLog').textContent = 'Connected account context: ' + walletAddr;
+
+    // 4. Force Switch or Add Monad Testnet RPC config
+    try {
+      await window.ethereum.request({ 
+        method: 'wallet_switchEthereumChain', 
+        params: [{ chainId: '0x279F' }] // Chain ID 10143 in Hex
+      });
+    } catch(switchError) {
+      // 4902 code means the requested chain hasn't been added to MetaMask yet
+      if (switchError.code === 4902) {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{ 
+            chainId: '0x279F', 
+            chainName: 'Monad Testnet', 
+            nativeCurrency: { name: 'MON', symbol: 'MON', decimals: 18 }, 
+            rpcUrls: ['https://testnet-rpc.monad.xyz'], 
+            blockExplorerUrls: ['https://testnet.monadexplorer.com'] 
+          }]
+        });
+      }
+    }
+
+    // 5. Clean up open UI frames
+    closeConnectModal();
+    showToast('MetaMask authenticated: ' + shortAddress);
+
+    // 6. Set hooks for runtime event alterations
+    window.ethereum.on('accountsChanged', (accounts) => {
+      if (accounts.length === 0) {
+        isConnected = false;
+        walletAddr = null;
+        location.reload();
+      } else {
+        walletAddr = accounts[0];
+        const s = walletAddr.slice(0,6) + '...' + walletAddr.slice(-4);
+        if (navBtn) navBtn.textContent = s;
+        document.getElementById('walletAddr').textContent = walletAddr;
       }
     });
+    window.ethereum.on('chainChanged', () => location.reload());
 
-  
-    function updateWalletUI(address) {
-      const walletBadge = document.getElementById('wallet-badge');
-      if (walletBadge) {
-        walletBadge.innerText = `🟢 Connected: ${address.substring(0,6)}...${address.substring(address.length - 4)}`;
-        walletBadge.classList.remove('bg-[#F3EFF5]', 'text-[#6B665F]');
-        walletBadge.classList.add('bg-[#E8F5E9]', 'text-[#2E7D32]', 'border-[#A5D6A7]');
-      }
+  } catch(e) {
+    // Reset states upon exception path processing
+    if (modalBtn) modalBtn.disabled = false;
+    if (btnText) btnText.textContent = 'Connect MetaMask';
+    
+    if (e.code === 4001) {
+      showToast('Connection rejected inside MetaMask UI window provider context', true);
+    } else {
+      showToast('Error binding instance connection setup: ' + e.message, true);
     }
+  }
+}
 
-    async function triggerMockPayment() {
-      const btn = document.getElementById('decrypt-btn');
+// ──────────────────────────────────────────────
+// APPLICATION SWITCH PANELS
+// ──────────────────────────────────────────────
+function switchTab(tab) {
+  if ((tab === 'ask' || tab === 'solve' || tab === 'wallet') && !requireWallet()) return;
+  activeTab = tab;
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    const tabs = ['browse','ask','solve','wallet'];
+    t.classList.toggle('active', tabs[i] === tab);
+  });
+  document.querySelectorAll('.panel').forEach((p, i) => {
+    const panels = ['panel-browse','panel-ask','panel-solve','panel-wallet'];
+    p.classList.toggle('active', panels[i] === 'panel-'+tab);
+  });
+  if (tab === 'solve') renderSolveList();
+  if (tab === 'browse') renderQuestions();
+}
 
-      if (typeof window.ethereum === 'undefined') {
-        alert("Please install MetaMask to use UniSolve!");
-        return;
-      }
+// ──────────────────────────────────────────────
+// PRESENTATION ENGINE RENDERS
+// ──────────────────────────────────────────────
+function renderQuestions() {
+  const filter = document.getElementById('filterStatus').value;
+  const questions = MOCK_QUESTIONS.filter(q => filter === 'all' || q.status === filter);
+  document.getElementById('qCount').textContent = questions.length;
+  document.getElementById('statQuestions').textContent = MOCK_QUESTIONS.length;
+  document.getElementById('statAnswers').textContent = Object.values(MOCK_ANSWERS).flat().length;
+  document.getElementById('statMon').textContent = (MOCK_QUESTIONS.reduce((s,q) => s + parseFloat(q.bounty), 0)).toFixed(1);
 
-      try {
-        btn.disabled = true;
-        btn.innerText = "🦊 Connecting MetaMask Extension...";
+  const container = document.getElementById('questionList');
+  if (!questions.length) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">⬛</div>No active questions mapped on-chain.</div>';
+    return;
+  }
+  container.innerHTML = questions.map(q => renderQCard(q, false)).join('');
+}
 
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const userAddress = accounts[0];
-        updateWalletUI(userAddress);
+function renderSolveList() {
+  const open = MOCK_QUESTIONS.filter(q => q.status === 'Open' && Date.now()/1000 < q.deadline);
+  const container = document.getElementById('solveList');
+  if (!open.length) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">⬛</div>No questions open for submission.</div>';
+    return;
+  }
+  container.innerHTML = open.map(q => renderQCard(q, true)).join('');
+}
 
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        signer = provider.getSigner();
+function renderQCard(q, solveMode) {
+  const now = Date.now() / 1000;
+  const open = q.status === 'Open' && now < q.deadline;
+  const timeLeft = q.deadline - now;
+  const countdown = open ? formatTime(timeLeft) : (q.status === 'Closed' ? 'Solved' : 'Expired');
+  const badgeClass = q.status === 'Open' ? 'badge-open' : q.status === 'Closed' ? 'badge-closed' : 'badge-refunded';
+  const cardClass = q.status === 'Closed' ? 'solved' : q.status === 'Refunded' ? 'refunded' : '';
+  const click = solveMode ? `openModal(${q.id}, true)` : `openModal(${q.id}, false)`;
+  return `
+    <div class="q-card ${cardClass}" onclick="${click}">
+      <div>
+        <div class="q-title">${escHtml(q.title)}</div>
+        <div class="q-preview">${escHtml(q.previewContent.slice(0,120))}${q.previewContent.length > 120 ? '…' : ''}</div>
+        <div class="q-meta">
+          <span class="q-meta-item green">${q.answerCount} solution submission envelope${q.answerCount !== 1 ? 's' : ''}</span>
+          <span class="q-meta-item amber">${countdown}</span>
+          <span class="q-meta-item">${timeAgo(q.createdAt)}</span>
+        </div>
+      </div>
+      <div class="q-right">
+        <div class="bounty">${q.bounty} MON<small>Bounty Reward</small></div>
+        <span class="status-badge ${badgeClass}">${q.status}</span>
+      </div>
+    </div>`;
+}
+
+// ──────────────────────────────────────────────
+// QUESTION SPECIFICATION MODALS
+// ──────────────────────────────────────────────
+function openModal(questionId, solveMode) {
+  if (!requireWallet()) return;
+  activeQuestionId = questionId;
+  isSolveMode = solveMode;
+  const q = MOCK_QUESTIONS.find(x => x.id === questionId);
+  if (!q) return;
+
+  document.getElementById('modalTitle').textContent = q.title;
+  document.getElementById('modalMeta').textContent =
+    `Locked Bounty Reward: ${q.bounty} MON  ·  ${q.answerCount} proofs  ·  Lifespan End: ${new Date(q.deadline*1000).toLocaleString()}`;
+  document.getElementById('modalPreview').textContent = q.previewContent;
+
+  const answers = MOCK_ANSWERS[questionId] || [];
+  document.getElementById('modalAnswerHeader').textContent =
+    `// ${answers.length} solution payload tracking entries verified`;
+
+  document.getElementById('modalAnswers').innerHTML = answers.length
+    ? answers.map(a => renderAnswerCard(a, q, solveMode)).join('')
+    : '<div style="font-family:var(--mono);font-size:0.78rem;color:var(--text3);padding:1rem 0;">No proof records found inside target context.</div>';
+
+  const submitForm = document.getElementById('submitAnswerForm');
+  submitForm.style.display = (solveMode && q.status === 'Open') ? 'block' : 'none';
+  document.getElementById('ansPrice').max = q.bounty;
+
+  document.getElementById('detailModal').classList.add('open');
+}
+
+function renderAnswerCard(a, q, solveMode) {
+  const winBadge = a.isBestAnswer ? '<span class="proof-badge" style="background:rgba(91,141,238,0.12);color:var(--blue);border-color:var(--blue)">✓ ESCROW WINNER</span>' : '';
+  const zkBadge = a.zkProof ? `<span class="proof-badge" title="${a.zkProof}">ZK Mapped Structure</span>` : '';
+  const unlockBtn = (!solveMode && !a.isPurchasedByAsker && !a.isBestAnswer)
+    ? `<button class="btn-unlock" onclick="unlockAnswer(${q.id}, ${a.id}, ${a.price})">Unlock Pipeline · ${a.price} MON</button>` : '';
+  const bestBtn = (!solveMode && a.isPurchasedByAsker && !q.winnerAnswerId)
+    ? `<button class="btn-best" onclick="selectBest(${q.id}, ${a.id})">Settle Reward to Solver Address</button>` : '';
+  const fullContent = a.isPurchasedByAsker
+    ? `<div style="margin-top:0.5rem;padding:0.75rem;background:rgba(0,255,136,0.04);border-left:2px solid var(--green);font-size:0.8rem;color:var(--text);line-height:1.7;font-family:var(--mono)">[DECRYPTED SUCCESS] 0x47fa9012... Resolution Procedure unlocked: Line 42 thread shadow collision resolved by atomic mutex variables declaration logic structure mapping. Complete verify check passed on test parameters stack execution.</div>`
+    : `<div class="blurred a-preview locked">████████ ████ ████████ ███ ████ ████████ ████<br>████ ████████ ███ ████ pay reward node to decrypt cipher payload ████████</div><div class="locked-notice">🔒 Ciphertext locked on-chain</div>`;
+
+  return `
+    <div class="a-card ${a.isBestAnswer ? 'winner' : ''}">
+      <div class="a-header">
+        <div class="a-solver">Solver Node: ${a.solver} · ${a.purchaseCount} unlocks</div>
+        <div class="a-price">Demand Option: ${a.price} MON</div>
+      </div>
+      <div class="a-preview">${escHtml(a.previewContent)}</div>
+      ${fullContent}
+      <div class="a-actions">
+        ${winBadge}${zkBadge}${unlockBtn}${bestBtn}
+      </div>
+    </div>`;
+}
+
+function closeModal() {
+  document.getElementById('detailModal').classList.remove('open');
+  activeQuestionId = null;
+}
+
+// ──────────────────────────────────────────────
+// DATA MUTATION INTERACTIONS
+// ──────────────────────────────────────────────
+function postQuestion() {
+  if (!requireWallet()) return;
+  const title = document.getElementById('askTitle').value.trim();
+  const preview = document.getElementById('askPreview').value.trim();
+  const bounty = document.getElementById('askBounty').value;
+  const duration = parseInt(document.getElementById('askDuration').value);
+
+  if (!title || !preview || !bounty) { showToast('Parameters cannot evaluate null arrays', true); return; }
+  if (parseFloat(bounty) < 0.001) { showToast('Bounty constraint bound must exceed 0.001 MON', true); return; }
+
+  const newQ = {
+    id: mockNextId++,
+    title, previewContent: preview,
+    bounty: parseFloat(bounty).toFixed(3),
+    deadline: Date.now()/1000 + duration,
+    status: 'Open',
+    winnerAnswerId: 0, answerCount: 0,
+    createdAt: Date.now()/1000,
+  };
+  MOCK_QUESTIONS.unshift(newQ);
+  MOCK_ANSWERS[newQ.id] = [];
+  showToast(`Escrow transaction committed! Bounty locked: ${newQ.bounty} MON`);
+  clearAskForm();
+  switchTab('browse');
+}
+
+function submitAnswer() {
+  if (!requireWallet()) return;
+  const preview = document.getElementById('ansPreview').value.trim();
+  const full = document.getElementById('ansFull').value.trim();
+  const price = document.getElementById('ansPrice').value;
+  if (!preview || !full || !price) { showToast('Complete input constraints', true); return; }
+
+  const q = MOCK_QUESTIONS.find(x => x.id === activeQuestionId);
+  if (!q) return;
+  if (parseFloat(price) > parseFloat(q.bounty)) { showToast('Solver pricing cannot override global bounty max cap', true); return; }
+
+  const newA = {
+    id: Date.now(),
+    solver: walletAddr ? walletAddr.slice(0,6) + '...' + walletAddr.slice(-4) : '0xAnon...0000',
+    previewContent: preview,
+    price: parseFloat(price).toFixed(3),
+    purchaseCount: 0,
+    isPurchasedByAsker: false,
+    isBestAnswer: false,
+    zkProof: 'zk:sha256:' + Math.random().toString(16).slice(2,8),
+  };
+  MOCK_ANSWERS[activeQuestionId].push(newA);
+  q.answerCount++;
+  showToast('Ciphertext matrix sent. ZK proof generated locally.');
+  document.getElementById('ansPreview').value = '';
+  document.getElementById('ansFull').value = '';
+  document.getElementById('ansPrice').value = '';
+  openModal(activeQuestionId, true);
+}
+
+async function unlockAnswer(questionId, answerId, price) {
+  if (!requireWallet()) return;
+  const a = MOCK_ANSWERS[questionId]?.find(x => x.id === answerId);
+  if (!a) return;
+
+  if (!provider || !signer) {
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+  }
+
+  try {
+    const tx = await signer.sendTransaction({
+      to: CONTRACT_ADDRESS,
+      value: ethers.utils.parseEther(price.toString())
+    });
+    showToast(`Payment transaction sent: ${price} MON. Waiting for confirmation...`);
+    await tx.wait();
+  } catch (err) {
+    console.error(err);
+    showToast('Payment failed: ' + (err.message || err), true);
+    return;
+  }
+
+  a.isPurchasedByAsker = true;
+  showToast(`Escrow micro-payment of ${price} MON verified. Decrypting...`);
+  openModal(questionId, false);
+}
+
+function selectBest(questionId, answerId) {
+  if (!requireWallet()) return;
+  const q = MOCK_QUESTIONS.find(x => x.id === questionId);
+  const a = MOCK_ANSWERS[questionId]?.find(x => x.id === answerId);
+  if (!q || !a) return;
+  q.status = 'Closed';
+  q.winnerAnswerId = answerId;
+  a.isBestAnswer = true;
+  showToast(`Finality lock state achieved. ${q.bounty} MON dispatched to solver.`);
+  closeModal();
+  renderQuestions();
+}
+
+function withdrawAll() {
+  if (!requireWallet()) return;
+  showToast('Gas transaction processing over Monad RPC pipeline...');
+  document.getElementById('pendingAmt').textContent = '0.000 MON';
+  document.getElementById('walletLog').textContent = 'Withdrawal processed. Blocks advanced. Finality delay: 400ms.';
+}
+
+function clearAskForm() {
+  ['askTitle','askPreview','askPubkey','askBounty'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('askDuration').value = '86400';
+}
+
+// ──────────────────────────────────────────────
+// AUXILIARY UTILITIES
+// ──────────────────────────────────────────────
+function formatTime(secs) {
+  if (secs <= 0) return 'Expired';
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  if (h > 24) return Math.floor(h/24) + 'd remaining';
+  if (h > 0) return h + 'h ' + m + 'm left';
+  return m + 'm remaining';
+}
+
+function timeAgo(ts) {
+  const diff = Date.now()/1000 - ts;
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+  return Math.floor(diff/86400) + 'd ago';
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let toastTimer;
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = isError ? 'error show' : 'show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = '', 3000);
+}
+
+// ──────────────────────────────────────────────
+// APPLICATION BOOTSTRAP SEQUENCE
+// ──────────────────────────────────────────────
+async function init() {
+  renderQuestions();
+
+  // If MetaMask is already active and approved, trigger seamless reconnection hook
+  if (typeof window.ethereum !== 'undefined') {
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+      if (accounts.length > 0) {
+        walletAddr = accounts[0];
+        isConnected = true;
+        const short = walletAddr.slice(0,6) + '...' + walletAddr.slice(-4);
         
-        btn.innerText = `⏳ Please Confirm 0.001 MONAD Payment in MetaMask...`;
-
-        const gasPrice = await provider.getGasPrice();
-
-        const tx = await signer.sendTransaction({
-          to: RECEIVER_ADDRESS, 
-          value: ethers.utils.parseEther(AMOUNT_TO_PAY),
-          gasPrice: gasPrice
-        });
-
-        btn.innerText = "⛓️ Waiting for Monad Block Confirmation...";
-
-        await tx.wait();
-
-        const codeBox = document.getElementById('code-blindbox');
-        codeBox.classList.remove('blur-xl', 'select-none');
-        codeBox.classList.add('bg-[#E8F5E9]', 'text-[#2E7D32]', 'border-[#A5D6A7]');
-
-        document.getElementById('lock-overlay').style.display = 'none';
-
-        btn.innerText = "✅ Paid & Decrypted Successfully! Code Unlocked.";
-        btn.style.backgroundColor = "#2E7D32";
-
-      } catch (error) {
-        console.error("Error in payment:", error);
-        console.error("Error code:", error.code);
-        console.error("Error message:", error.message);
-        
-        btn.disabled = false;
-        
-        if (error.code === 'ACTION_REJECTED') {
-          console.log("User rejected the transaction.");
-          btn.innerText = "🚫 Payment Rejected - Try Again";
-          return;
-        } else if (error.message?.includes('insufficient')) {
-          console.log("Insufficient funds or gas.");
-          btn.innerText = "💸 Insufficient Balance";
-          return;
+        const navBtn = document.getElementById('connectBtn');
+        if (navBtn) {
+          navBtn.textContent = short;
+          navBtn.classList.add('connected');
         }
         
-        console.log("Fallback to instant description due to RPC latency.");
-        const codeBox = document.getElementById('code-blindbox');
-        codeBox.classList.remove('blur-xl', 'select-none');
-        codeBox.classList.add('bg-[#E8F5E9]', 'text-[#2E7D32]', 'border-[#A5D6A7]');
-        document.getElementById('lock-overlay').style.display = 'none';
-        btn.innerText = "✅ Decrypted Successfully (Sandbox Bypass).";
-        btn.style.backgroundColor = "#2E7D32";
-      }
-    }
-  </script>
+        document.getElementById('walletAddr').textContent = walletAddr;
+        document.getElementById('walletLog').textContent = 'Auto-reconnected active environment provider: ' + walletAddr;
 
+        window.ethereum.on('accountsChanged', (accs) => {
+          if (accs.length === 0) { isConnected = false; location.reload(); }
+          else { 
+            walletAddr = accs[0]; 
+            if (navBtn) navBtn.textContent = walletAddr.slice(0,6)+'...'+walletAddr.slice(-4); 
+          }
+        });
+        window.ethereum.on('chainChanged', () => location.reload());
+      }
+    } catch(e) { console.error("Silent context loading skipped:", e); }
+  }
+}
+
+init();
+</script>
 </body>
 </html>
