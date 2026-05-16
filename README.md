@@ -44,39 +44,18 @@
 **What if the asker doesn't want to pay at all?**
 
 **UniSolve solves this with encrypted answers + free previews:**
-┌─────────────────────────────────────────────────────────────────┐
-│ UniSolve Answer Flow │
-├─────────────────────────────────────────────────────────────────┤
-│ │
-│ 👩‍💻 Solver writes answer │
-│ │ │
-│ ▼ │
-│ ✂️ Split answer into two parts: │
-│ - 20% PREVIEW (free, proves you know the answer) │
-│ - 80% FULL (encrypted, pay to unlock) │
-│ │ │
-│ ▼ │
-│ 📤 Upload to Monad blockchain │
-│ │ │
-│ ▼ │
-│ 👨‍🎓 Asker sees ALL previews from ALL solvers: │
-│ │
-│ "Solver A: 'Your bug is caused by variable type...'" │
-│ "Solver B: 'The loop condition should be i<10...'" │
-│ │ │
-│ ├──────────────────────────────────────────────┐ │
-│ │ │ │
-│ ▼ ▼ │
-│ 💰 Pick the best preview 🙅 Skip │
-│ Pay to unlock full answer │ │
-│ │ │ │
-│ ▼ ▼ │
-│ 🔓 Get complete solution Get refund │
-│ │ (if no buy) │
-│ ▼ │ │
-│ ✅ Solver gets paid │ │
-│ │
-└─────────────────────────────────────────────────────────────────┘
+
+**Step 1:** Asker posts question with bounty (e.g., "5 MON for fixing my SQL")
+
+**Step 2:** Multiple solvers submit answers - but only 20% is visible (free preview)
+
+**Step 3:** Asker reads all previews, picks the best one
+
+**Step 4:** Asker pays to unlock the full answer
+
+**Step 5:** Solver gets paid instantly
+
+**Step 6:** No good answer? Full refund after deadline
 
 **Why this works:**
 
