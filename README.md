@@ -45,17 +45,17 @@
 
 **UniSolve solves this with encrypted answers + free previews:**
 
-**Step 1:** Asker posts question with bounty (e.g., "5 MON for fixing my SQL")
-
-**Step 2:** Multiple solvers submit answers - but only 20% is visible (free preview)
-
-**Step 3:** Asker reads all previews, picks the best one
-
-**Step 4:** Asker pays to unlock the full answer
-
-**Step 5:** Solver gets paid instantly
-
-**Step 6:** No good answer? Full refund after deadline
+  **Step 1:** Asker posts question with bounty (e.g., "5 MON for fixing my SQL")
+  
+  **Step 2:** Multiple solvers submit answers - but only 20% is visible (free preview)
+  
+  **Step 3:** Asker reads all previews, picks the best one
+  
+  **Step 4:** Asker pays to unlock the full answer
+  
+  **Step 5:** Solver gets paid instantly
+  
+  **Step 6:** No good answer? Full refund after deadline
 
 **Why this works:**
 
