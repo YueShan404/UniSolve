@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniSolve | Anonymous Q&A on Monad</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(90deg, #00ff88, #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: #888;
+            margin-top: 10px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .card h2 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: linear-gradient(90deg, #00ff88, #00ccff);
+            border: none;
+            border-radius: 10px;
+            color: #0f0f23;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(90deg, #ff8800, #ffcc00);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(90deg, #ff4444, #ff8888);
+            color: white;
+        }
+        
+        .question-item, .answer-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 3px solid #00ff88;
+        }
+        
+        .preview-text {
+            color: #aaa;
+            font-style: italic;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+        }
+        
+        .connect-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: auto;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            z-index: 100;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-active {
+            background: #00ff8833;
+            color: #00ff88;
+        }
+        
+        .status-resolved {
+            background: #88888833;
+            color: #888;
+        }
+        
+        .bounty {
+            color: #ffcc00;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .timer {
+            font-family: monospace;
+            font-size: 14px;
+            color: #ff8800;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .monad-badge {
+            font-size: 12px;
+            color: #00ff88;
+        }
+        
+        .flex {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+        }
+        
+        .flex button {
+            flex: 1;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .connect-btn {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="connect-btn" id="connectWallet">🔗 Connect Wallet</button>
+    
+    <div class="container">
+        <header>
+            <h1>🧠 UniSolve</h1>
+            <p class="subtitle">Anonymous Q&A Marketplace on Monad Blockchain</p>
+            <p class="monad-badge">⚡ 20% Free Preview | Pay to Unlock | Auto-Refund</p>
+        </header>
+        
+        <div id="app" style="display:none;">
+            <div class="grid">
+                <!-- Card 1: Create Question -->
+                <div class="card">
+                    <h2>📝 Ask a Question</h2>
+                    <input type="text" id="questionTitle" placeholder="Title (e.g., SQL query help)">
+                    <textarea id="questionPreview" placeholder="Problem description (free preview for everyone to see)"></textarea>
+                    <input type="number" id="bounty" placeholder="Bounty (MON) - e.g., 5" step="0.5">
+                    <input type="number" id="duration" placeholder="Duration (minutes) - e.g., 30" value="30">
+                    <button id="createQuestionBtn">💰 Post Question & Lock Bounty</button>
+                    <div id="createResult" style="margin-top:10px; font-size:14px;"></div>
+                </div>
+                
+                <!-- Card 2: Active Questions -->
+                <div class="card">
+                    <h2>🔍 Open Questions</h2>
+                    <button id="refreshQuestionsBtn">🔄 Refresh</button>
+                    <div id="questionsList" style="max-height: 500px; overflow-y: auto;">
+                        <p style="color:#888; text-align:center;">Loading...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 3: My Answers (for Solvers) -->
+            <div class="card">
+                <h2>📤 My Submissions</h2>
+                <div id="myAnswersList">
+                    <p style="color:#888;">No submissions yet</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="notConnected" style="text-align:center; padding:100px;">
+            <h2>🔗 Connect Your Wallet</h2>
+            <p>Connect MetaMask to start using UniSolve</p>
+            <button id="connectBtnCenter" style="width:200px; margin-top:20px;">Connect MetaMask</button>
+        </div>
+        
+        <footer>
+            <p>⚡ Powered by Monad Blockchain | 20% Free Preview | Pay to Unlock</p>
+            <p>🏆 Monad Blitz Kuala Lumpur 2026</p>
+        </footer>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.min.js"></script>
+    <script>
+        // ==================== CONFIG ====================
+        // !!! REPLACE WITH YOUR DEPLOYED CONTRACT ADDRESS !!!
+        const CONTRACT_ADDRESS = "0xYourContractAddressHere";
+        
+        const ABI = [
+            "function createQuestion(string title, string preview, uint bounty, uint duration) external payable",
+            "function submitAnswer(uint questionId, string preview, string encryptedFull, string proof, uint price) external",
+            "function purchaseAnswer(uint questionId, uint answerId) external payable",
+            "function selectWinner(uint questionId, uint answerId) external",
+            "function refundTimeout(uint questionId) external",
+            "function getQuestion(uint) external view returns (address, string, string, uint, uint, bool, bool, address)",
+            "function getAnswers(uint) external view returns (tuple(uint id, uint questionId, address solver, string preview, string encryptedFull, string proof, uint price, uint timestamp, bool isPaid, address paidBy, string decryptionKey)[])",
+            "function getActiveQuestions() external view returns (uint[])",
+            "function getAnswerPreview(uint, uint) external view returns (string)",
+            "function questionCounter() external view returns (uint)",
+            "function questions(uint) external view returns (uint, address, string, string, uint, uint, bool, bool, address)",
+            "event QuestionCreated(uint id, address asker, string title, uint bounty)",
+            "event AnswerSubmitted(uint questionId, uint answerId, address solver, string preview)",
+            "event AnswerPurchased(uint questionId, uint answerId, address buyer, address solver, uint price)"
+        ];
+        
+        let provider, signer, contract, currentAccount;
+        
+        // ==================== CONNECT WALLET ====================
+        async function connectWallet() {
+            if (!window.ethereum) {
+                alert("Please install MetaMask!");
+                window.open("https://metamask.io/download/", "_blank");
+                return;
+            }
+            
+            try {
+                provider = new ethers.BrowserProvider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                signer = await provider.getSigner();
+                currentAccount = await signer.getAddress();
+                contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+                
+                document.getElementById("notConnected").style.display = "none";
+                document.getElementById("app").style.display = "block";
+                
+                // Load initial data
+                loadActiveQuestions();
+                loadMyAnswers();
+                
+                // Listen to events
+                contract.on("QuestionCreated", () => { loadActiveQuestions(); });
+                contract.on("AnswerSubmitted", () => { loadActiveQuestions(); loadMyAnswers(); });
+                contract.on("AnswerPurchased", () => { loadActiveQuestions(); loadMyAnswers(); });
+                
+                console.log("Connected:", currentAccount);
+            } catch (error) {
+                console.error("Connection error:", error);
+                alert("Failed to connect: " + error.message);
+            }
+        }
+        
+        // ==================== CREATE QUESTION ====================
+        async function createQuestion(title, preview, bounty, durationMinutes) {
+            const bountyWei = ethers.parseEther(bounty.toString());
+            const tx = await contract.createQuestion(title, preview, bountyWei, durationMinutes, { value: bountyWei });
+            await tx.wait();
+            return true;
+        }
+        
+        document.getElementById("createQuestionBtn").onclick = async () => {
+            const title = document.getElementById("questionTitle").value;
+            const preview = document.getElementById("questionPreview").value;
+            const bounty = parseFloat(document.getElementById("bounty").value);
+            const duration = parseInt(document.getElementById("duration").value);
+            
+            if (!title || !preview || !bounty || bounty <= 0) {
+                alert("Please fill all fields");
+                return;
+            }
+            
+            const btn = document.getElementById("createQuestionBtn");
+            btn.innerText = "⏳ Processing...";
+            btn.disabled = true;
+            
+            try {
+                await createQuestion(title, preview, bounty, duration);
+                document.getElementById("createResult").innerHTML = "✅ Question posted! Bounty locked.";
+                document.getElementById("createResult").style.color = "#00ff88";
+                document.getElementById("questionTitle").value = "";
+                document.getElementById("questionPreview").value = "";
+                document.getElementById("bounty").value = "";
+                await loadActiveQuestions();
+            } catch (error) {
+                document.getElementById("createResult").innerHTML = "❌ Error: " + error.message;
+                document.getElementById("createResult").style.color = "#ff8888";
+            } finally {
+                btn.innerText = "💰 Post Question & Lock Bounty";
+                btn.disabled = false;
+            }
+        };
+        
+        // ==================== LOAD ACTIVE QUESTIONS ====================
+        async function loadActiveQuestions() {
+            try {
+                const activeIds = await contract.getActiveQuestions();
+                const container = document.getElementById("questionsList");
+                
+                if (activeIds.length === 0) {
+                    container.innerHTML = '<p style="color:#888; text-align:center;">No open questions. Create one!</p>';
+                    return;
+                }
+                
+                let html = "";
+                for (let i = 0; i < activeIds.length; i++) {
+                    const qId = Number(activeIds[i]);
+                    const q = await contract.getQuestion(qId);
+                    const answers = await contract.getAnswers(qId);
+                    
+                    const deadline = Number(q[4]);
+                    const isActive = q[5];
+                    const isResolved = q[6];
+                    const bounty = ethers.formatEther(q[3]);
+                    
+                    html += `
+                        <div class="question-item" id="question-${qId}">
+                            <div class="flex">
+                                <strong>🔖 #${qId}</strong>
+                                <span class="bounty">💰 ${parseFloat(bounty).toFixed(2)} MON</span>
+                            </div>
+                            <div><strong>${q[1]}</strong></div>
+                            <div class="preview-text">${q[2].substring(0, 150)}...</div>
+                            <div class="timer">⏰ Expires: ${new Date(deadline * 1000).toLocaleTimeString()}</div>
+                    `;
+                    
+                    if (answers.length > 0) {
+                        html += `<div style="margin-top:15px;"><strong>📩 Answers (${answers.length}):</strong>`;
+                        for (let a = 0; a < answers.length; a++) {
+                            const ans = answers[a];
+                            const price = ethers.formatEther(ans.price);
+                            const isPaid = ans.isPaid;
+                            
+                            html += `
+                                <div style="background:rgba(0,0,0,0.2); margin:10px 0; padding:10px; border-radius:8px;">
+                                    <div class="flex">
+                                        <span>🔐 Answer from ${ans.solver.substring(0, 8)}...</span>
+                                        <span>💰 ${parseFloat(price).toFixed(2)} MON</span>
+                                    </div>
+                                    <div class="preview-text">📖 Preview: "${ans.preview.substring(0, 100)}..."</div>
+                            `;
+                            
+                            if (!isPaid) {
+                                html += `<button class="purchase-btn" data-qid="${qId}" data-aid="${ans.id}" data-price="${price}">💳 Pay ${parseFloat(price).toFixed(2)} MON to Unlock Full Answer</button>`;
+                            } else {
+                                html += `<span style="color:#00ff88;">✅ Purchased</span>`;
+                            }
+                            
+                            html += `</div>`;
+                        }
+                        html += `</div>`;
+                    }
+                    
+                    if (isActive && !isResolved) {
+                        html += `<button class="refund-btn" data-qid="${qId}">⏰ No good answer? Get Refund</button>`;
+                    }
+                    
+                    html += `</div>`;
+                }
+                
+                container.innerHTML = html;
+                
+                // Attach purchase event listeners
+                document.querySelectorAll(".purchase-btn").forEach(btn => {
+                    btn.onclick = async () => {
+                        const qId = parseInt(btn.dataset.qid);
+                        const aId = parseInt(btn.dataset.aid);
+                        const price = btn.dataset.price;
+                        await purchaseAnswer(qId, aId, price);
+                    };
+                });
+                
+                document.querySelectorAll(".refund-btn").forEach(btn => {
+                    btn.onclick = async () => {
+                        const qId = parseInt(btn.dataset.qid);
+                        await refundQuestion(qId);
+                    };
+                });
+                
+            } catch (error) {
+                console.error("Load questions error:", error);
+            }
+        }
+        
+        // ==================== PURCHASE ANSWER ====================
+        async function purchaseAnswer(questionId, answerId, price) {
+            try {
+                const priceWei = ethers.parseEther(price);
+                const tx = await contract.purchaseAnswer(questionId, answerId, { value: priceWei });
+                await tx.wait();
+                alert("Answer unlocked! Check the decryption key.");
+                await loadActiveQuestions();
+            } catch (error) {
+                alert("Purchase failed: " + error.message);
+            }
+        }
+        
+        // ==================== REFUND ====================
+        async function refundQuestion(questionId) {
+            if (!confirm("Get refund? This will close the question.")) return;
+            try {
+                const tx = await contract.refundTimeout(questionId);
+                await tx.wait();
+                alert("Refunded!");
+                await loadActiveQuestions();
+            } catch (error) {
+                alert("Refund failed: " + error.message);
+            }
+        }
+        
+        // ==================== LOAD MY ANSWERS ====================
+        async function loadMyAnswers() {
+            try {
+                const activeIds = await contract.getActiveQuestions();
+                let myAnswers = [];
+                
+                for (let i = 0; i < activeIds.length; i++) {
+                    const qId = Number(activeIds[i]);
+                    const answers = await contract.getAnswers(qId);
+                    for (let a = 0; a < answers.length; a++) {
+                        if (answers[a].solver.toLowerCase() === currentAccount.toLowerCase()) {
+                            myAnswers.push({ qId, answer: answers[a] });
+                        }
+                    }
+                }
+                
+                const container = document.getElementById("myAnswersList");
+                if (myAnswers.length === 0) {
+                    container.innerHTML = '<p style="color:#888;">No submissions yet. Browse questions and answer!</p>';
+                    return;
+                }
+                
+                let html = "";
+                for (let item of myAnswers) {
+                    const price = ethers.formatEther(item.answer.price);
+                    html += `
+                        <div class="answer-item">
+                            <div><strong>Question #${item.qId}</strong></div>
+                            <div class="preview-text">Preview: "${item.answer.preview.substring(0, 100)}..."</div>
+                            <div>💰 Your price: ${parseFloat(price).toFixed(2)} MON</div>
+                            <div>Status: ${item.answer.isPaid ? "✅ PURCHASED - You got paid!" : "⏳ Waiting for purchase..."}</div>
+                        </div>
+                    `;
+                }
+                container.innerHTML = html;
+            } catch (error) {
+                console.error("Load my answers error:", error);
+            }
+        }
+        
+        // ==================== SUBMIT ANSWER (Modal) ====================
+        // This would be a separate button on each question
+        // For simplicity, we'll add a global submit function that can be called
+        
+        async function submitAnswerToQuestion(questionId, preview, encryptedFull, proof, price) {
+            try {
+                const priceWei = ethers.parseEther(price.toString());
+                const tx = await contract.submitAnswer(questionId, preview, encryptedFull, proof, priceWei);
+                await tx.wait();
+                alert("Answer submitted!");
+                await loadActiveQuestions();
+                await loadMyAnswers();
+            } catch (error) {
+                alert("Submit failed: " + error.message);
+            }
+        }
+        
+        // Expose for debugging
+        window.submitAnswerToQuestion = submitAnswerToQuestion;
+        
+        // ==================== REFRESH ====================
+        document.getElementById("refreshQuestionsBtn").onclick = () => {
+            loadActiveQuestions();
+            loadMyAnswers();
+        };
+        
+        document.getElementById("connectBtnCenter").onclick = connectWallet;
+        
+        // Auto-connect if MetaMask already has account
+        if (window.ethereum && window.ethereum.selectedAddress) {
+            connectWallet();
+        }
+    </script>
+</body>
+</html>
