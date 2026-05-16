@@ -44,38 +44,38 @@
 **What if the asker doesn't want to pay at all?**
 
 **UniSolve solves this with encrypted answers + free previews:**
-
 ┌─────────────────────────────────────────────────────────────────┐
-│                    UniSolve Answer Flow                          │
+│ UniSolve Answer Flow │
 ├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  👩‍💻 Solver writes answer                                        │
-│         │                                                        │
-│         ▼                                                        │
-│  ✂️ Split answer into two parts:                                 │
-│     - 20% PREVIEW (free, proves you know the answer)            │
-│     - 80% FULL (encrypted, pay to unlock)                       │
-│         │                                                        │
-│         ▼                                                        │
-│  📤 Upload to Monad blockchain                                   │
-│         │                                                        │
-│         ▼                                                        │
-│  👨‍🎓 Asker sees ALL previews from ALL solvers:                   │
-│     "Solver A: 'Your bug is caused by variable type...'"         │
-│     "Solver B: 'The loop condition should be i<10...'"           │
-│         │                                                        │
-│         ├──────────────────────────────────────────────┐         │
-│         │                                              │         │
-│         ▼                                              ▼         │
-│  💰 Pick the best preview                           🙅 Skip     │
-│     Pay to unlock full answer                         │         │
-│         │                                              │         │
-│         ▼                                              ▼         │
-│  🔓 Get complete solution                          Get refund   │
-│         │                                         (if no buy)    │
-│         ▼                                              │         │
-│  ✅ Solver gets paid                                  │         │
-│                                                                  │
+│ │
+│ 👩‍💻 Solver writes answer │
+│ │ │
+│ ▼ │
+│ ✂️ Split answer into two parts: │
+│ - 20% PREVIEW (free, proves you know the answer) │
+│ - 80% FULL (encrypted, pay to unlock) │
+│ │ │
+│ ▼ │
+│ 📤 Upload to Monad blockchain │
+│ │ │
+│ ▼ │
+│ 👨‍🎓 Asker sees ALL previews from ALL solvers: │
+│ │
+│ "Solver A: 'Your bug is caused by variable type...'" │
+│ "Solver B: 'The loop condition should be i<10...'" │
+│ │ │
+│ ├──────────────────────────────────────────────┐ │
+│ │ │ │
+│ ▼ ▼ │
+│ 💰 Pick the best preview 🙅 Skip │
+│ Pay to unlock full answer │ │
+│ │ │ │
+│ ▼ ▼ │
+│ 🔓 Get complete solution Get refund │
+│ │ (if no buy) │
+│ ▼ │ │
+│ ✅ Solver gets paid │ │
+│ │
 └─────────────────────────────────────────────────────────────────┘
 
 **Why this works:**
