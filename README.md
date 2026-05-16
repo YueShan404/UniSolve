@@ -1,15 +1,32 @@
-# Monad Blitz Kuala Lumpur Submission Process
+# 🛡️ Proof of Truth
 
-## Steps to prepare your project repo:
+### *Real-time Media Authenticity Verification on Monad Blockchain*
 
-1. Visit the `monad-blitz-kl` repo (link [here](https://github.com/monad-developers/monad-blitz-kl)) and fork it.
+[![Monad](https://img.shields.io/badge/Built%20on-Monad-00FF88)](https://monad.xyz)
+[![Hackathon](https://img.shields.io/badge/Monad%20Blitz-KL%202026-blue)](https://lu.ma/monad-blitz-kl)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-![1.png](/screenshots/1.png)
+---
 
-2. Give it your project name, a one-liner description, make sure you are forking `main` branch and click `Create Fork`
+## 🎯 The Problem
 
-![2.png](https://github.com/monad-developers/monad-blitz-denver/raw/main/screenshots/2.png?raw=true)
+**AI-generated deepfakes and fake news are destroying trust.**
 
-1. In your fork you can make all the changes you want, add code of your project, create branches, add information to `README.md` , you can change anything and everything.
+Every day, millions of people share and believe manipulated videos and images. Traditional verification methods are too slow, centralized, and easily manipulated. You can't trust what you see anymore.
 
-2. For next steps head to [Blitz Portal](https://blitz.devnads.com)
+**By 2026, AI-generated content is indistinguishable from reality.** We need a solution.
+
+---
+
+## 💡 The Solution: Proof of Truth
+
+A **decentralized media authenticity verification system** built on Monad blockchain that:
+
+- 📸 **Instantly notarizes** media fingerprints (SHA-256 hashes) on-chain
+- 🔍 **Instantly verifies** if any video/image has been tampered with
+- ⚡ **Real-time** verification powered by Monad's 10,000+ TPS
+- 🌐 **Immutable & transparent** - no single point of failure
+
+---
+
+## 🔧 How It Works
